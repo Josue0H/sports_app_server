@@ -1,10 +1,10 @@
 const sql = require('mssql');
 
 const configsql = {
-    user: 'usersports',
+    user: 'usergeneralsports',
     password: 'chivas123',
     server: 'localhost',
-    database: 'Sports',
+    database: 'GeneralSports',
     options: {
         trustedConnection: true,
         encrypt: true,
@@ -20,10 +20,8 @@ const getTeams = async (req, res) => {
         }
 
 
-        var querystring = `select e.IDEquipo, NombreEquipo, NombreEstadio, CapacidadEstadio, UbicacionEstadio, StrImagenEquipo, StrImagenEstadio, AnnoFundacion, Descripcion, p.NombrePais Pais, l.NombreLiga Liga from Equipo e
-                            join Pais p on e.IDPais=p.IDPais
-                            join EquipoLiga el on el.IDEquipo=e.IDEquipo
-                            join Liga l on l.IDLiga=el.IDLiga`;
+        var querystring = `select top 200 e.IDEquipo, NombreEquipo, NombreEstadio, CapacidadEstadio, UbicacionEstadio, StrImagenEquipo, StrImagenEstadio, AnnoFundacion, Descripcion, p.NombrePais Pais from Equipo e
+                            join Pais p on e.IDPais=p.IDPais`;
 
         var sqlrequest = new sql.Request();
 
@@ -44,7 +42,7 @@ const getSports = async (req, res) => {
         }
 
 
-        var querystring = `select * from Deporte`;
+        var querystring = `select IDDeporte, NombreDeporte from Deporte`;
 
         var sqlrequest = new sql.Request();
 
@@ -88,10 +86,8 @@ const getTeam = async (req, res) => {
         }
 
 
-        var querystring = `select e.IDEquipo, NombreEquipo, NombreEstadio, CapacidadEstadio, UbicacionEstadio, StrImagenEquipo, StrImagenEstadio, AnnoFundacion, Descripcion, p.NombrePais Pais, l.NombreLiga Liga from Equipo e
+        var querystring = `select top 200 e.IDEquipo, NombreEquipo, NombreEstadio, CapacidadEstadio, UbicacionEstadio, StrImagenEquipo, StrImagenEstadio, AnnoFundacion, Descripcion, p.NombrePais Pais from Equipo e
                             join Pais p on e.IDPais=p.IDPais
-                            join EquipoLiga el on el.IDEquipo=e.IDEquipo
-                            join Liga l on l.IDLiga=el.IDLiga
                             where e.IDEquipo=${idTeam}`;
 
         var sqlrequest = new sql.Request();
@@ -113,7 +109,7 @@ const getLeagues = async (req, res) => {
         }
 
 
-        var querystring = `select IDLiga, NombreLiga, NombreAlterno, d.NombreDeporte Deporte from Liga l
+        var querystring = `select top 200 IDLiga, NombreLiga, NombreAlterno, d.NombreDeporte Deporte from Liga l
                             join Deporte d on d.IDDeporte=l.IDDeporte`;
 
         var sqlrequest = new sql.Request();
@@ -156,8 +152,8 @@ const getLeagueTeams = async (req, res) => {
     });
 }
 
-const getSportCountry = async (req, res) => {
-    const countryName = req.params.countryName;
+const getLeagueCountry = async (req, res) => {
+    const idCountry = req.params.idCountry;
 
     sql.connect(configsql, (err) => {
         if(err){
@@ -165,10 +161,10 @@ const getSportCountry = async (req, res) => {
         }
 
 
-        var querystring = `select d.IDDeporte, NombreDeporte Deporte, p.NombrePais Pais from Deporte d
-                            join DeportePais dp on dp.IDDeporte=d.IDDeporte
-                            join Pais p on p.IDPais=dp.IDPais
-                            where NombrePais like '%${countryName}%'`;
+        var querystring = `select l.IDLiga, l.NombreLiga, l.NombreAlterno, d.NombreDeporte Deporte, p.NombrePais Pais from Liga l
+                            join Deporte d on d.IDDeporte=l.IDDeporte
+                            join Pais p on p.IDPais=l.IDPais
+                            where p.IDPais=${idCountry}`;
 
         var sqlrequest = new sql.Request();
 
@@ -237,7 +233,7 @@ const getSearchTeam = async (req, res) => {
 module.exports = {
     getTeams,
     getLeagues,
-    getSportCountry,
+    getLeagueCountry,
     getSportLeagues,
     getTeam,
     getSports,
