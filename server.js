@@ -6,9 +6,9 @@ require("dotenv").config();
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json({ extended: true }));
 app.use('/api', router);
-app.use(cors());
 
 
 app.listen(process.env.PORT, () => {
